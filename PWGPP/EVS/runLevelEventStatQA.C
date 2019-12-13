@@ -308,12 +308,16 @@ Int_t runLevelEventStatQA(TString qafilename="event_stat.root", Int_t run=295588
   else if (run>=280236 && run<=282007) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-CENTNOTRD"; } // back to pp at 13TeV
   else if (run>=282008 && run<=282441) { refSigma= 21.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-CENTNOTRD"; } // pp@5.02TeV. Taking previous estimates
   else if (run>=282442 && run<=294999) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-CENTNOTRD"; } // back to pp at 13TeV
-  else if (run>=295000 && run<=295670) { refSigma=4000.; refEff = 0.50; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Martino cs(INEL) = 8000 mb
-  else if (run>=295671 && run<=295715) { refSigma=4000.; refEff = 0.0675; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // bug in the trigger config
-  else if (run>=295716 && run<=295716) { refSigma=4000.; refEff = 0.50; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // run ok
-  else if (run>=295717 && run<=295720) { refSigma=4000.; refEff = 0.0675; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // bug in the trigger config
-  else if (run>=295721               ) { refSigma=4000.; refEff = 0.50; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Martino cs(INEL) = 8000 mb
-  
+  else if (run>=295000 && run<=295589) { refSigma=4127.; refEff = 0.536; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Galuber cs(INEL) = 7660 mb, eff from Lumi Note
+  else if (run>=295590 && run<=295615) { refSigma=4096.; refEff = 0.532; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Galuber cs(INEL) = 7660 mb, eff from Lumi Note
+  else if (run>=295616 && run<=295670) { refSigma=3989.; refEff = 0.518; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Galuber cs(INEL) = 7660 mb, eff from Lumi Note
+  else if (run>=295671 && run<=295715) { refSigma=3989.; refEff = 0.07; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // Bug fix of trigger config
+  else if (run>=295716 && run<=295716) { refSigma=3989.; refEff = 0.518; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // Run trigger config ok
+  else if (run>=295717 && run<=295720) { refSigma=3989.; refEff = 0.07; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // Bug fix of trigger config
+  else if (run>=295721 && run<=296198) { refSigma=3989.; refEff = 0.518; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Galuber cs(INEL) = 7660 mb, eff from Lumi Note
+  else if (run>=296199 && run<=297595) { refSigma=3958.; refEff = 0.514; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Galuber cs(INEL) = 7660 mb, eff from Lumi Note
+  else if (run>=297596               ) { refSigma=4000.; refEff = 0.50; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Martino cs(INEL) = 8000 mb
+
   
   Double_t orbitRate = 11245.;
   TString partition;
