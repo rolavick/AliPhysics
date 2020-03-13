@@ -288,7 +288,7 @@ Int_t runLevelEventStatQA(TString qafilename="event_stat.root", Int_t run=295588
   else if (run>=232914 && run<=233858) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-CENT";      } // estimates from Martino and MC
   else if (run>=233910 && run<=234050) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-ALLNOTRD";  } // estimates from Martino and MC
   else if (run>=234051 && run<=238669) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-CENT";      } // estimates from Martino and MC
-  else if (run>=238670 && run<=239144) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-I-NOPF-CENTNOTRD"; } // estimates from Martino and MC
+  else if (run>=238670 && run<=239144) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-CENTNOTRD"; } // estimates from Martino and MC
   else if (run>=239155 && run<=240150) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-CENTNOTRD"; } // estimates from Martino and MC
   else if (run>=240151 && run<=240151) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-MUON";      } // estimates from Martino and MC
   else if (run>=240152 && run<=243373) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-CENTNOTRD"; } // estimates from Martino and MC
@@ -364,6 +364,23 @@ Int_t runLevelEventStatQA(TString qafilename="event_stat.root", Int_t run=295588
     class_lumi[i] = lumi_seen*class_lifetime[i];
     AliTriggerClass* cl = (AliTriggerClass*) classes.At(i);
     cl->GetDownscaleFactor(class_ds[i]);
+  }
+
+  // special treatment for I-Mask
+  if (run>=238670 && run<=239144) {
+    AliTriggerClass* refImaskClassObject = (AliTriggerClass*) classes.FindObject("C0TVX-I-NOPF-CENTNOTRD");
+    for (Int_t i=0;i<classes.GetEntriesFast();i++){
+      AliTriggerClass* cl = (AliTriggerClass*) classes.At(i);
+      if (!cl) continue;
+      if (TString(cl->GetName()).Contains("CINT7-I") && refImaskClassObject){
+        Int_t refImaskId = classes.IndexOf(refImaskClassObject);
+        TString refImaskCluster = refImaskClassObject->GetCluster()->GetName();
+        Int_t refImaskCounts = (activeDetectorsString.Contains("TRD") && (refImaskCluster.EqualTo("CENT") || refImaskCluster.EqualTo("ALL") || refImaskCluster.EqualTo("FAST"))) ? class_lMb[refImaskId] : class_l0b[refImaskId];
+        for (Int_t i=0;i<classes.GetEntriesFast();i++){
+          class_lumi[i] = class_lumi[i]*TMath::Log(1-(Double_t)(refImaskCounts)/totalBCs)/TMath::Log(1-(Double_t)(refCounts)/totalBCs);
+        }
+      }
+    }
   }
 
   // special treatment for Pb-Pb 2015
