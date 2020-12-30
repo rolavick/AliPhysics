@@ -309,10 +309,6 @@ Int_t runLevelEventStatQA(TString qafilename="event_stat.root", Int_t run=295588
   else if (run>=280236 && run<=282007) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-CENTNOTRD"; } // back to pp at 13TeV
   else if (run>=282008 && run<=282441) { refSigma= 21.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-CENTNOTRD"; } // pp@5.02TeV. Taking previous estimates
   else if (run>=282442 && run<=294999) { refSigma= 30.0; refEff = 0.40; refClass = "C0TVX-B-NOPF-CENTNOTRD"; } // back to pp at 13TeV
-//  else if (run>=295000 && run<=295589) { refEff = 0.536; refSigma=7660.*refEff; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Galuber cs(INEL) = 7660 mb, eff from Lumi Note
-//  else if (run>=295590 && run<=295615) { refEff = 0.532; refSigma=7660.*refEff; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Galuber cs(INEL) = 7660 mb, eff from Lumi Note
-//  else if (run>=295616 && run<=296198) { refEff = 0.518; refSigma=7660.*refEff; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Galuber cs(INEL) = 7660 mb, eff from Lumi Note
-//  else if (run>=296199 && run<=297595) { refEff = 0.514; refSigma=7660.*refEff; refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from Galuber cs(INEL) = 7660 mb, eff from Lumi Note
   else if (run>=295000 && run<=295589) { refSigma=3933.; refEff = 0.536;refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from vdM scan cs(V0M) = 3.933, eff from Lumi Note
   else if (run>=295590 && run<=295615) { refSigma=3933.; refEff = 0.532;refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from vdM scan cs(V0M) = 3.933, eff from Lumi Note
   else if (run>=295616 && run<=296198) { refSigma=3933.; refEff = 0.518;refClass = "C0V0M-B-NOPF-CENTNOTRD"; } // PbPb at 5.02TeV, sigma from vdM scan cs(V0M) = 3.933, eff from Lumi Note
@@ -325,7 +321,6 @@ Int_t runLevelEventStatQA(TString qafilename="event_stat.root", Int_t run=295588
   TString lhcState;
   TString lhcPeriod;
   TString activeDetectorsString;
-  //Int_t run, TString ocdbStorage, TString &partition, TString &activeDetectorsString, Double_t& run_duration, 
   classes = GetClasses(run,ocdbStorage,partition,activeDetectorsString,run_duration,class_lMb,class_lMa,class_l0b,class_l0a,class_l1b,class_l1a,class_l2b,class_l2a,class_duration);
   activeDetectors.SetString(activeDetectorsString.Data());
   objPartition.SetString(partition.Data());
@@ -358,7 +353,6 @@ Int_t runLevelEventStatQA(TString qafilename="event_stat.root", Int_t run=295588
   if (refSigma>1.e-10) lumi_seen = run_duration*refInteractionRate/refSigma/1000; //[ub-1]
 
   for (Int_t i=0;i<classes.GetEntriesFast();i++){
-    // printf("%30s %12lli %10lli %10lli %10lli %10lli %10lli\n",classes.At(i)->GetName(),class_l0b[i],class_l0a[i],class_l1b[i],class_l1a[i],class_l2b[i],class_l2a[i]);
     class_lifetime[i] = class_lMb[i]>0 ? Double_t(class_lMa[i])/class_lMb[i]: 0;
     class_lifetime[i]*= class_l0b[i]>0 ? Double_t(class_l0a[i])/class_l0b[i]: 0;
     class_lifetime[i]*= class_l1b[i]>0 ? Double_t(class_l1a[i])/class_l1b[i]: 0;
