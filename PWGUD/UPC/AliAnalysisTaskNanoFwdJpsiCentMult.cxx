@@ -259,7 +259,7 @@ void AliAnalysisTaskNanoFwdJpsiCentMult::IfJpsiStoreAllTracks(Int_t *idxPosMuons
     }
     // store only central barrel tracks
     if(TMath::Abs(track->Eta()) > 0.9) continue;
-    new((*fCentralBarrelTracks)[iTrack]) AliAODTrack(*track);
+    new((*fCentralBarrelTracks)[nCentralBarrelSelectedTracks]) AliAODTrack(*track);
     nCentralBarrelSelectedTracks++;
   }
 
