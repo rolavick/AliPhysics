@@ -14,9 +14,6 @@ if (!mgr) {
 if (!mgr->GetInputEventHandler()) {
     return 0x0;
 }
-// get is MC information
-Bool_t fIsMC;
-if( mgr->GetMCtruthEventHandler() ) fIsMC = kTRUE;
 
 // by default, a file is open for writing. here, we get the filename
 TString fileName = AliAnalysisManager::GetCommonFileName();
@@ -25,9 +22,6 @@ fileName += suffix;      	 // specific subfolder name for each subwagon
 // now we create an instance of your task
 AliAnalysisTaskNanoFwdJpsiCentMult* task = new AliAnalysisTaskNanoFwdJpsiCentMult(name.Data());
 if(!task) return 0x0;
-
-// set task options
-task->SetMC(fIsMC);
 
 // add your task to the manager
 mgr->AddTask(task);

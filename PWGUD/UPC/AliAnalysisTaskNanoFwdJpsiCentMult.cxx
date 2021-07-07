@@ -53,6 +53,7 @@
 #include <AliAnalysisTask.h>
 #include <AliAnalysisManager.h>
 #include <AliAODEvent.h>
+#include <AliAODTrack.h>
 #include <AliMCEvent.h>
 #include <AliMCParticle.h>
 #include <AliAODInputHandler.h>
@@ -69,28 +70,30 @@ ClassImp(AliAnalysisTaskNanoFwdJpsiCentMult) // classimp: necessary for root
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 AliAnalysisTaskNanoFwdJpsiCentMult::AliAnalysisTaskNanoFwdJpsiCentMult() : AliAnalysisTaskSE(),
-  fMuonTrackCuts(0x0), fPeriod(0), fTrigger(0), fIsScalingOn(0), fAOD(0), fOutputList(0),fCounterH(0), fNumberMuonsH(0), fNtracksNoJpsiH(0), fNtracksCentralBarrelH(0),
+  fMuonTrackCuts(0x0), fAOD(0), fOutputList(0),fCounterH(0), fNumberMuonsH(0), fNtracksNoJpsiH(0), fNtracksCentralBarrelH(0),
   fAllTracksTree(0), fRunNum(0), fL0inputs(0),
   fZNCEnergy(-999), fZNAEnergy(-999),
   fV0ADecision(-10), fV0CDecision(-10),  fV0AFiredCells(-10), fV0CFiredCells(-10), fADADecision(-10), fADCDecision(-10), fIsZNAFired(-10), fIsZNCFired(-10),
   fJpsiPt(0), fJpsiY(0), fJpsiM(0),
   fCMUP6Decision(-10), fCMUP10Decision(-10), fCMUP11Decision(-10),
   fTrgTree(0), fTrgRunNum(0), 
-  fCMUP6(-10), fCMUP10(-10), fCMUP11(-10)
+  fCMUP6(-10), fCMUP10(-10), fCMUP11(-10),
+  fCentralBarrelTracks(0)
 {
   // default constructor, don't allocate memory here!
   // this is used by root for IO purposes, it needs to remain empty
 }
 // ----------------------------------------------------------------------------------------------------------------------------------
 AliAnalysisTaskNanoFwdJpsiCentMult::AliAnalysisTaskNanoFwdJpsiCentMult(const char* name) : AliAnalysisTaskSE(name),
-  fMuonTrackCuts(0x0), fPeriod(0), fTrigger(0), fIsScalingOn(0), fAOD(0), fOutputList(0),fCounterH(0), fNumberMuonsH(0), fNtracksNoJpsiH(0), fNtracksCentralBarrelH(0),
+  fMuonTrackCuts(0x0), fAOD(0), fOutputList(0),fCounterH(0), fNumberMuonsH(0), fNtracksNoJpsiH(0), fNtracksCentralBarrelH(0),
   fAllTracksTree(0), fRunNum(0), fL0inputs(0),
   fZNCEnergy(-999), fZNAEnergy(-999),
   fV0ADecision(-10), fV0CDecision(-10),  fV0AFiredCells(-10), fV0CFiredCells(-10), fADADecision(-10), fADCDecision(-10), fIsZNAFired(-10), fIsZNCFired(-10),
   fJpsiPt(0), fJpsiY(0), fJpsiM(0),
   fCMUP6Decision(-10), fCMUP10Decision(-10), fCMUP11Decision(-10),
   fTrgTree(0), fTrgRunNum(0), 
-  fCMUP6(-10), fCMUP10(-10), fCMUP11(-10)
+  fCMUP6(-10), fCMUP10(-10), fCMUP11(-10),
+  fCentralBarrelTracks(0)
 {
   // constructor
   DefineInput(0, TChain::Class());   
@@ -132,6 +135,9 @@ void AliAnalysisTaskNanoFwdJpsiCentMult::UserCreateOutputObjects()
   ////////////////////////////////////////
   //All tracks tree
   ////////////////////////////////////////
+  //tracks
+  fCentralBarrelTracks = new TClonesArray("AliAODTrack", 1000);
+
   fAllTracksTree = new TTree("fRecTree", "fRecTree");
   fAllTracksTree ->Branch("fRunNum", &fRunNum, "fRunNum/I");
   fAllTracksTree ->Branch("fL0inputs", &fL0inputs, "fL0inputs/i");
@@ -153,6 +159,8 @@ void AliAnalysisTaskNanoFwdJpsiCentMult::UserCreateOutputObjects()
   fAllTracksTree ->Branch("fCMUP6Decision", &fCMUP6Decision, "fCMUP6Decision/I");
   fAllTracksTree ->Branch("fCMUP10Decision", &fCMUP10Decision, "fCMUP10Decision/I");
   fAllTracksTree ->Branch("fCMUP11Decision", &fCMUP11Decision, "fCMUP11Decision/I");
+  fAllTracksTree ->Branch("fCentralBarrelTracks", &fCentralBarrelTracks);
+
   // post data
   PostData(1, fAllTracksTree);
 
@@ -239,6 +247,7 @@ void AliAnalysisTaskNanoFwdJpsiCentMult::IfJpsiStoreAllTracks(Int_t *idxPosMuons
   Int_t nTracks(fAOD->GetNumberOfTracks());
   if(nTracks<1) return;
 
+  fCentralBarrelTracks->Clear("C");
   for(Int_t iTrack = 0; iTrack < nTracks; iTrack++) {
     // skip MUON arm muons
     if( (idxPosMuons[0] == iTrack) || (idxNegMuons[0] == iTrack) ) continue;
@@ -250,6 +259,7 @@ void AliAnalysisTaskNanoFwdJpsiCentMult::IfJpsiStoreAllTracks(Int_t *idxPosMuons
     }
     // store only central barrel tracks
     if(TMath::Abs(track->Eta()) > 0.9) continue;
+    new((*fCentralBarrelTracks)[iTrack]) AliAODTrack(*track);
     nCentralBarrelSelectedTracks++;
   }
 
@@ -277,14 +287,6 @@ void AliAnalysisTaskNanoFwdJpsiCentMult::UserExec(Option_t *)
   iSelectionCounter++;
 
   ////////////////////////////////////////////
-  // Selecting good runs
-  ////////////////////////////////////////////
-  Bool_t IsGoodRun = kFALSE;
-
-  fCounterH->Fill(iSelectionCounter); // Good run selected 3/3
-  iSelectionCounter++;
-
-  ////////////////////////////////////////////
   //  Trigger information
   ////////////////////////////////////////////
   // in 2018 q,r : CMUP6-B-NOPF-MUFAST = *0VBA 0MUL ,  
@@ -294,36 +296,29 @@ void AliAnalysisTaskNanoFwdJpsiCentMult::UserExec(Option_t *)
   
   Bool_t isTriggered = kFALSE;
 
-  // ###### CMUP10+CMUP11 triggers
-  if (fTrigger.Contains("CMUP11")){
-    if (trigger.Contains("CMUP11-B-NOPF-MUFAST")) {
-      isTriggered = kTRUE;
-      fCMUP11Decision = 1;
-      fCMUP11 = 1;
-    } else {
-      fCMUP11Decision = 0;
-      fCMUP11 = 0;
-    }
-
-    if (trigger.Contains("CMUP10-B-NOPF-MUFAST")) {
-      isTriggered = kTRUE;
-      fCMUP10Decision = 1;
-      fCMUP10 = 1;
-    } else {
-      fCMUP10Decision = 0;
-      fCMUP10 = 0;
-    }
+  if (trigger.Contains("CMUP11-B-NOPF-MUFAST")) {
+    isTriggered = kTRUE;
+    fCMUP11Decision = 1;
+    fCMUP11 = 1;
+  } else {
+    fCMUP11Decision = 0;
+    fCMUP11 = 0;
   }
-  // ###### CMUP6 trigger
-  if (fTrigger.Contains("CMUP6")){
-    if (trigger.Contains("CMUP6-B-NOPF-MUFAST")) {
-      isTriggered = kTRUE;
-      fCMUP6Decision = 1;
-      fCMUP6 = 1;
-    } else {
-      fCMUP6Decision = 0;
-      fCMUP6 = 0;
-    }
+  if (trigger.Contains("CMUP10-B-NOPF-MUFAST")) {
+    isTriggered = kTRUE;
+    fCMUP10Decision = 1;
+    fCMUP10 = 1;
+  } else {
+    fCMUP10Decision = 0;
+    fCMUP10 = 0;
+  }
+  if (trigger.Contains("CMUP6-B-NOPF-MUFAST")) {
+    isTriggered = kTRUE;
+    fCMUP6Decision = 1;
+    fCMUP6 = 1;
+  } else {
+    fCMUP6Decision = 0;
+    fCMUP6 = 0;
   }
 
   if (!isTriggered) {

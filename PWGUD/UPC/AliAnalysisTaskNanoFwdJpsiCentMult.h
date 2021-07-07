@@ -8,6 +8,7 @@
 #include <AliAnalysisTaskSE.h>
 
 class AliMuonTrackCuts; 	// Include class for standard muon tack cuts
+class TClonesArray;
 
 
 class AliAnalysisTaskNanoFwdJpsiCentMult : public AliAnalysisTaskSE
@@ -22,17 +23,11 @@ public:
     virtual void            Terminate(Option_t* option);
     virtual void   			NotifyRun();								  // Implement the Notify run to search for the new parameters at each new runs
   void          IfJpsiStoreAllTracks(Int_t *pos, Int_t *neg); // Analyse two muons and if they have Jpsi mass, store all tracks in the event
-	void 					SetPeriod(TString period){fPeriod = period;}  
-	void 					SetTrigger(TString trigger){fTrigger = trigger;}
-	void 					SetScaling(Bool_t flag){fIsScalingOn = flag;}
 	void 					PostAllData();	
 
     AliMuonTrackCuts* 		fMuonTrackCuts; 					// Use the class as a data member
 
 private:
-	TString 				fPeriod;
-	TString 				fTrigger;
-	Bool_t 					fIsScalingOn;
 
     AliAODEvent*            fAOD;       		//! input event
 
@@ -69,6 +64,8 @@ private:
 	Int_t fCMUP6;
 	Int_t fCMUP10;
 	Int_t fCMUP11;
+
+  TClonesArray *fCentralBarrelTracks;
 
 
     AliAnalysisTaskNanoFwdJpsiCentMult(const AliAnalysisTaskNanoFwdJpsiCentMult&); // not implemented
